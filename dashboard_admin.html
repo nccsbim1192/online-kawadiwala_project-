@@ -1,0 +1,196 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2><i class="fas fa-cog me-2"></i>Admin Dashboard</h2>
+      <p class="lead">System Overview</p>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-md-3 mb-3">
+      <div class="card bg-primary text-white shadow">
+        <div class="card-body text-center">
+          <h3>{{ user_stats.total }}</h3>
+          <p>Total Users</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card bg-success text-white shadow">
+        <div class="card-body text-center">
+          <h3>{{ user_stats.customers }}</h3>
+          <p>Customers</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card bg-info text-white shadow">
+        <div class="card-body text-center">
+          <h3>{{ user_stats.collectors }}</h3>
+          <p>Collectors</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card bg-warning text-dark shadow">
+        <div class="card-body text-center">
+          <h3>{{ pickup_stats.total }}</h3>
+          <p>Total Pickups</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-md-3 mb-3">
+      <div class="card bg-secondary text-white shadow">
+        <div class="card-body text-center">
+          <h4>{{ pickup_stats.completed }}</h4>
+          <p>Completed Pickups</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card bg-danger text-white shadow">
+        <div class="card-body text-center">
+          <h4>{{ pickup_stats.pending }}</h4>
+          <p>Pending Pickups</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card bg-dark text-white shadow">
+        <div class="card-body text-center">
+          <h4>{{ pickup_stats.this_month }}</h4>
+          <p>This Month's Pickups</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card bg-success text-white shadow">
+        <div class="card-body text-center">
+          <h4>{{ total_transactions|floatformat:2 }}</h4>
+          <p>Total Weight Recycled (kg)</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-lg-6 mb-4">
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-list me-2"></i>Recent Pickup Requests
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-striped mb-0">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Customer</th>
+                <th>Waste Type</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for pickup in recent_pickups %}
+              <tr>
+                <td>{{ pickup.pickup_date }}</td>
+                <td>{{ pickup.customer.username }}</td>
+                <td>{{ pickup.waste_category.name }}</td>
+                <td>
+                  <span class="badge bg-secondary">{{ pickup.status|capfirst }}</span>
+                </td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="4">No recent pickups.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6 mb-4">
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-users me-2"></i>Recent Users
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-striped mb-0">
+            <thead>
+              <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Joined</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for user in recent_users %}
+              <tr>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.get_role_display }}</td>
+                <td>{{ user.date_joined|date:"Y-m-d" }}</td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="4">No recent users.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-recycle me-2"></i>Waste Categories
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-bordered mb-0">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Rate/KG (Rs)</th>
+                <th>Description</th>
+                <th>Active?</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for cat in waste_categories %}
+              <tr>
+                <td>{{ cat.name }}</td>
+                <td>{{ cat.rate_per_kg }}</td>
+                <td>{{ cat.description|default:"-" }}</td>
+                <td>
+                  {% if cat.is_active %}
+                    <span class="badge bg-success">Yes</span>
+                  {% else %}
+                    <span class="badge bg-danger">No</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="4">No categories found.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="mt-4 text-end">
+        <a href="/admin/" class="btn btn-outline-primary" target="_blank">
+          <i class="fas fa-tools me-2"></i>Open Full Django Admin
+        </a>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

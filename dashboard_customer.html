@@ -1,0 +1,131 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2><i class="fas fa-tachometer-alt me-2"></i>Customer Dashboard</h2>
+        <p class="lead">Welcome back, {{ user.username }}!</p>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body text-center">
+                <h4>{{ pending_count|default:0 }}</h4>
+                <p><i class="fas fa-clock me-1"></i>Pending Requests</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center">
+                <h4>{{ completed_count|default:0 }}</h4>
+                <p><i class="fas fa-check me-1"></i>Completed</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body text-center">
+                <h4>{{ total_earnings|default:0|floatformat:2 }}</h4>
+                <p><i class="fas fa-coins me-1"></i>Total Earnings</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body text-center">
+                <h4>{{ impact.total_weight_recycled|default:0|floatformat:1 }} kg</h4>
+                <p><i class="fas fa-recycle me-1"></i>Recycled</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-tools me-2"></i>Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <a href="{% url 'request_pickup' %}" class="btn btn-success btn-lg d-block mb-3">
+                    <i class="fas fa-plus me-2"></i>Request New Pickup
+                </a>
+                <a href="{% url 'pickup_history' %}" class="btn btn-info btn-lg d-block">
+                    <i class="fas fa-history me-2"></i>View History
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-leaf me-2"></i>Environmental Impact</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span><i class="fas fa-tree me-1"></i>Trees Saved:</span>
+                        <strong>{{ impact.trees_saved|default:0|floatformat:1 }}</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span><i class="fas fa-cloud me-1"></i>CO2 Reduced:</span>
+                        <strong>{{ impact.co2_reduced|default:0|floatformat:1 }} kg</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span><i class="fas fa-tint me-1"></i>Water Saved:</span>
+                        <strong>{{ impact.water_saved|default:0|floatformat:1 }} L</strong>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Pickups -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-history me-2"></i>Recent Pickup Requests</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_pickups %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Weight (kg)</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pickup in recent_pickups %}
+                            <tr>
+                                <td>{{ pickup.waste_category.name|default:"N/A" }}</td>
+                                <td>{{ pickup.estimated_weight_kg|default:0 }}</td>
+                                <td>{{ pickup.pickup_date|default:"N/A" }}</td>
+                                <td>
+                                    <span class="badge bg-success">{{ pickup.status|default:"pending" }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-center">No pickup requests yet. <a href="{% url 'request_pickup' %}">Request your first pickup!</a></p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+<!DOCTYPE html>

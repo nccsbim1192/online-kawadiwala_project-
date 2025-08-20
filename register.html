@@ -1,0 +1,170 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0"><i class="fas fa-user-plus me-2"></i>Register for Online Kawadiwala</h4>
+            </div>
+            <div class="card-body">
+                <!-- Display Form Errors -->
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <form method="post" novalidate>{% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.username.id_for_label }}" class="form-label">
+                                    Username <span class="text-danger">*</span>
+                                </label>
+                                {{ form.username }}
+                                {% if form.username.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.username.errors.0 }}</div>
+                                {% endif %}
+                                {% if form.username.help_text %}
+                                    <small class="form-text text-muted">{{ form.username.help_text }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.email.id_for_label }}" class="form-label">
+                                    Email <span class="text-danger">*</span>
+                                </label>
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.email }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.phone.id_for_label }}" class="form-label">Phone </label>
+                                {{ form.phone }}
+                                {% if form.phone.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.phone.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.role.id_for_label }}" class="form-label">
+                                    I am a <span class="text-danger">*</span>
+                                </label>
+                                {{ form.role }}
+                                {% if form.role.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.role.errors.0 }}</div>
+                                {% endif %}
+                                <small class="form-text text-muted">
+                                    Choose Customer to sell waste, Collector to collect waste
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.address.id_for_label }}" class="form-label">Address</label>
+                        {{ form.address }}
+                        {% if form.address.errors %}
+                            <div class="invalid-feedback d-block">{{ form.address.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.password1.id_for_label }}" class="form-label">
+                                    Password <span class="text-danger">*</span>
+                                </label>
+                                {{ form.password1 }}
+                                {% if form.password1.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.password1.errors.0 }}</div>
+                                {% endif %}
+                                {% if form.password1.help_text %}
+                                    <small class="form-text text-muted">{{ form.password1.help_text }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.password2.id_for_label }}" class="form-label">
+                                    Confirm Password <span class="text-danger">*</span>
+                                </label>
+                                {{ form.password2 }}
+                                {% if form.password2.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.password2.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-success btn-lg w-100">
+                            <i class="fas fa-user-plus me-2"></i>Create Account
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="text-center mt-3">
+                    <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+def register(request):
+    print(f"Registration view called. Method: {request.method}")
+    
+    if request.method == 'POST':
+        print(f"POST data received: {request.POST}")
+        form = CustomUserCreationForm(request.POST)
+        print(f"Form is valid: {form.is_valid()}")
+        
+        if form.is_valid():
+            print("Form is valid, attempting to save user...")
+            try:
+                user = form.save()
+                print(f"User created successfully: {user.username}, Role: {user.role}")
+                
+                if user.role == 'customer':
+                    RecyclingImpact.objects.create(user=user)
+                    print("Recycling impact created for customer")
+                
+                login(request, user)
+                messages.success(request, f'Welcome {user.username}! Account created successfully.')
+                print("User logged in, redirecting to dashboard...")
+                return redirect('dashboard')
+                
+            except Exception as e:
+                print(f"Error during user creation: {e}")
+                messages.error(request, f'Registration failed: {str(e)}')
+        else:
+            print(f"Form validation errors: {form.errors}")
+            for field, errors in form.errors.items():
+                print(f"Field '{field}' errors: {errors}")
+    else:
+        form = CustomUserCreationForm()
+    
+    return render(request, 'core/register.html', {'form': form})
+
+    <script>
+document.getElementById('id_username').addEventListener('input', function(e) {
+    let value = e.target.value;
+    let noDigits = value.replace(/\d/g, '');
+    
+    if (value !== noDigits) {
+        e.target.value = noDigits;
+        // Show a message that digits were removed
+        console.log('Digits removed from username');
+    }
+});
+</script>

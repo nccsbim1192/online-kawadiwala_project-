@@ -1,0 +1,86 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0"><i class="fas fa-plus me-2"></i>Request Pickup</h4>
+            </div>
+            <div class="card-body">
+                <form method="post">{% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.waste_category.id_for_label }}" class="form-label">Waste Category:</label>
+                                {{ form.waste_category }}
+                                {% if form.waste_category.errors %}
+                                    <div class="text-danger">{{ form.waste_category.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.estimated_weight_kg.id_for_label }}" class="form-label">Estimated Weight (kg):</label>
+                                {{ form.estimated_weight_kg }}
+                                {% if form.estimated_weight_kg.errors %}
+                                    <div class="text-danger">{{ form.estimated_weight_kg.errors }}</div>
+                                {% endif %}
+                                <div id="estimated-price" class="alert alert-info mt-2" style="display: none;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.pickup_date.id_for_label }}" class="form-label">Pickup Date:</label>
+                                {{ form.pickup_date }}
+                                {% if form.pickup_date.errors %}
+                                    <div class="text-danger">{{ form.pickup_date.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.pickup_time.id_for_label }}" class="form-label">Pickup Time:</label>
+                                {{ form.pickup_time }}
+                                {% if form.pickup_time.errors %}
+                                    <div class="text-danger">{{ form.pickup_time.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.address.id_for_label }}" class="form-label">Pickup Address:</label>
+                        {{ form.address }}
+                        {% if form.address.errors %}
+                            <div class="text-danger">{{ form.address.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.special_instructions.id_for_label }}" class="form-label">Special Instructions (Optional):</label>
+                        {{ form.special_instructions }}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <button type="submit" class="btn btn-success btn-lg w-100">
+                                <i class="fas fa-paper-plane me-2"></i>Submit Request
+                            </button>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{% url 'customer_dashboard' %}" class="btn btn-secondary btn-lg w-100">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

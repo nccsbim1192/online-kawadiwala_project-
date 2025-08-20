@@ -1,0 +1,46 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Payment for Pickup #{{ pickup.id }}</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Waste Category:</strong> {{ pickup.waste_category.name }}</p>
+                    <p><strong>Weight:</strong> {{ pickup.actual_weight_kg }} kg</p>
+                    <p><strong>Amount:</strong> Rs. {{ transaction.amount }}</p>
+                    
+                    <!-- eSewa Payment Form -->
+                    <form method="POST" action="https://uat.esewa.com.np/epay/main">
+                        <input type="hidden" name="tAmt" value="{{ transaction.amount }}">
+                        <input type="hidden" name="amt" value="{{ transaction.amount }}">
+                        <input type="hidden" name="txAmt" value="0">
+                        <input type="hidden" name="psc" value="0">
+                        <input type="hidden" name="pdc" value="0">
+                        <input type="hidden" name="scd" value="{{ esewa_merchant_id }}">
+                        <input type="hidden" name="pid" value="{{ transaction.id }}">
+                        <input type="hidden" name="su" value="{{ success_url }}">
+                        <input type="hidden" name="fu" value="{{ failure_url }}">
+                        
+                        <button type="submit" class="btn btn-success btn-lg btn-block">
+                            Pay with eSewa
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+<!-- In payment templates -->
+<form method="POST" action="https://uat.esewa.com.np/epay/main">
+    {% csrf_token %}  <!-- Add this line -->
+    <input type="hidden" name="tAmt" value="{{ transaction.amount }}">
+    <!-- ... other form fields ... -->
+    <button type="submit" class="btn btn-success btn-lg btn-block">
+        Pay via eSewa
+    </button>
+</form>

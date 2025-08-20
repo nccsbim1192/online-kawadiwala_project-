@@ -1,0 +1,39 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2><i class="fas fa-truck me-2"></i>Collector Dashboard</h2>
+        <p class="lead">Welcome, {{ user.username }}!</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-clock me-2"></i>Available Pickups</h5>
+            </div>
+            <div class="card-body">
+                {% if available_pickups %}
+                    <p>{{ available_pickups.count }} pickup requests available</p>
+                {% else %}
+                    <p>No pickup requests available at the moment.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-chart-line me-2"></i>Your Statistics</h5>
+            </div>
+            <div class="card-body">
+                <p>Total Earnings: Rs. {{ total_earnings|default:0|floatformat:2 }}</p>
+                <p>Pickups Completed: {{ completion_rate|default:0 }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
